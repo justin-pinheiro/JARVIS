@@ -5,11 +5,10 @@ import winsound
 import playsound
 import speech_recognition as sr
 
-run = True
+import keys
 
-#keys
-openai.api_key = "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"
-tts_api_key = '8c75115b14544c638e5b0163e803acee'
+run = True
+openai.api_key = keys.OPENAI_KEY
 
 while(run):
     
@@ -52,7 +51,7 @@ while(run):
     language = 'fr-fr'
     voice = 'Axel'
 
-    response = requests.get(f'http://api.voicerss.org/?key={tts_api_key}&hl={language}&v={voice}&src={gpt_response}&r=2&c=mp3')
+    response = requests.get(f'http://api.voicerss.org/?key={keys.TTS_KEY}&hl={language}&v={voice}&src={gpt_response}&r=2&c=mp3')
 
     with open('speech.mp3', 'wb') as file:
         file.write(response.content)
