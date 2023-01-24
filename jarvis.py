@@ -11,14 +11,9 @@ import MusicPlayer
 """ PROGRAM """
 
 def startJARVIS() -> None:
-
-    initSpeech = "Initialisation du système... Système opérationnel... Bonjour, Monsieur."
-    tts.createAudioSpeechFromText(initSpeech, 'fr-fr', 'Axel', 'speech.mp3')
-
-    print("\nJARVIS : " + initSpeech)
-
-    tts.playAudioFile('speech.mp3')
-    tts.removeAudioFile('speech.mp3')
+    
+    print("\nJARVIS : " + "Initialisation du système... Système opérationnel. Bonjour, Monsieur.")
+    tts.playAudioFile('initSpeech.mp3')
 
 #JARVIS Program
 def runJARVIS() -> None:

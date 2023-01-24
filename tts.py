@@ -13,8 +13,8 @@ def createAudioSpeechFromText(text, language, voice, path) -> None:
 def playAudioFile(path) -> None:
     with open(path, 'rb') as file:
         playsound.playsound(path)
-        audio = MP3("speech.mp3")
-        time.sleep(audio.info.length - 2)
+        audio = MP3(path)
+        time.sleep(audio.info.length-1)
         file.close()
 
 def removeAudioFile(path) -> None:
