@@ -11,9 +11,12 @@ import MusicPlayer
 """ PROGRAM """
 
 def startJARVIS() -> None:
+
     initSpeech = "Initialisation du système... Système opérationnel... Bonjour, Monsieur."
     tts.createAudioSpeechFromText(initSpeech, 'fr-fr', 'Axel', 'speech.mp3')
+
     print("\nJARVIS : " + initSpeech)
+
     tts.playAudioFile('speech.mp3')
     tts.removeAudioFile('speech.mp3')
 
@@ -38,13 +41,11 @@ def runJARVIS() -> None:
 
         #text recognition and response
         response : str
-        response = ia.getResponseFromGPT3ViaPrompt("text-davinci-003", question)
-
         response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
 
         print("\nJARVIS : " + response)
 
-        """
+        """ (A faire)
         #Lecteur de commandes
         if(response[0]=='/'):
             print(response[0:10])
