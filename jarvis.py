@@ -20,7 +20,7 @@ def runJARVIS() -> None:
 
     print("Jarvis enabled")
 
-    startJARVIS()
+    #startJARVIS()
     
     run = True
     
@@ -40,18 +40,14 @@ def runJARVIS() -> None:
 
         print("\nJARVIS : " + response)
 
-        """ (A faire)
-        #Lecteur de commandes
-        if(response[0]=='/'):
-            print(response[0:10])
-            if(response[0:10] == "/playMusic/"):
-                MusicPlayer.playMusic(response.split("/")[1])
-        """
-
         #text to speech
         tts.createAudioSpeechFromText(response, 'fr-fr', 'Axel', 'speech.mp3')
         tts.playAudioFile('speech.mp3')
         tts.removeAudioFile('speech.mp3')
+
+        #Lecteur de commandes
+        if "Je lance la musique" in response:
+            MusicPlayer.playMusic(response.replace("Je lance la musique", ""))
 
 
 #main
