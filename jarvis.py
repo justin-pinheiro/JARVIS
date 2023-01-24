@@ -7,32 +7,47 @@ import os
 import stt
 import ia
 import tts
+import MusicPlayer
 
 
 """ PROGRAM """
 
 #JARVIS Program
 def runJARVIS() -> None:
+
+    print("Jarvis enabled")
+
     run = True
     
     while(run):
 
         #speech to text
+        question : str
         question = ""
         while (question == ""):
             question = stt.getTextFromMicrophoneRecord()
+
         print("\nMOI : " + question)
 
         #text recognition and response
+        response : str
         response = ia.getResponseFromGPT3ViaPrompt("text-davinci-003", question)
         print("\nJARVIS : " + response)
+
+        """
+        #Lecteur de commandes
+        if(response[0]=='/'):
+            print(response[0:10])
+            if(response[0:10] == "/playMusic/"):
+                MusicPlayer.playMusic(response.split("/")[1])
+        """
 
         #text to speech
         tts.createAudioSpeechFromText(response, 'fr-fr', 'Axel', 'speech.mp3')
         tts.playAudioFile('speech.mp3')
         tts.removeAudioFile('speech.mp3')
 
+
 #main
 if __name__ == "__main__":
     runJARVIS()
-    
