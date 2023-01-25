@@ -2,6 +2,7 @@
 
 #project libraries
 
+from time import sleep
 import stt
 import ia
 import tts
@@ -37,7 +38,6 @@ def runJARVIS() -> None:
         #text recognition and response
         response : str
         response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
-
         print("\nJARVIS : " + response)
 
         #text to speech
@@ -48,6 +48,9 @@ def runJARVIS() -> None:
         #Lecteur de commandes
         if "Je lance la musique" in response:
             MusicPlayer.playMusic(response.replace("Je lance la musique", ""))
+        if "Arrêt du système" in response:
+            sleep(1)
+            run = False
 
 
 #main
