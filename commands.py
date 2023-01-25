@@ -2,6 +2,7 @@ import datetime
 import MusicPlayer
 from time import sleep
 from MusicPlayer import playMusic
+from jarvis import Jarvis
 
 
 keywords_list = {
@@ -18,11 +19,11 @@ class CommandLauncher:
     :param keyword: The keyword to recognize
     :param options: Additional options for the command
     """
-    def __init__(self, keyword : str, options : str):
-       
+    def __init__(self, jarvis : Jarvis, keyword : str, options : str):
+        
+        self.jarvis = jarvis
         self.keyword = keyword.lower()
         self.options = options.lower()
-        self.run = True
 
     """
     Recognize the command keyword.
@@ -40,13 +41,13 @@ class CommandLauncher:
     """
     Activate the command.
     """
-    def activate(self) -> int:
+    def activate(self) -> None:
 
         #stop the system
         if self.keyword in keywords_list["STOP"]:
             print("Stopping the system...")
             sleep(1)
-            self.run = False
+            self.jarvis.run = False
 
         #print current date
         elif self.keyword in keywords_list["DATE"]:
@@ -61,5 +62,4 @@ class CommandLauncher:
         else:
             print("COMMAND ERROR: keyword ["+ self.keyword +"] not recognized")
 
-        return self.run
          
