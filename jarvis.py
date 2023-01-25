@@ -1,32 +1,24 @@
 """ LIBRARIES """
 
-#project libraries
-
-from time import sleep
 import stt
 import ia
 import tts
-import MusicPlayer
+import commands
 
 
 """ PROGRAM """
 
 def startJARVIS() -> None:
-    
     print("\nJARVIS : " + "Initialisation du système... Système opérationnel. Bonjour, Monsieur.")
     tts.playAudioFile('initSpeech.mp3')
 
-#JARVIS Program
+
 def runJARVIS() -> None:
-
-    print("Jarvis enabled")
-
     #startJARVIS()
     
     run = True
     
     while(run):
-
         #speech to text
         question : str
         question = ""
@@ -35,22 +27,22 @@ def runJARVIS() -> None:
 
         print("\nMOI : " + question)
 
-        #text recognition and response
-        response : str
-        response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
-        print("\nJARVIS : " + response)
+        #Commands
+        commandLauncher = commands.CommandLauncher(question.split()[0], question.partition(' ')[2])
+        
+        if (commandLauncher.recognizeCommand()):
+            run = commandLauncher.activate()
+            
+        else:
+            #text recognition and response
+            response : str
+            response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
+            print("\nJARVIS : " + response)
 
-        #text to speech
-        tts.createAudioSpeechFromText(response, 'fr-fr', 'Axel', 'speech.mp3')
-        tts.playAudioFile('speech.mp3')
-        tts.removeAudioFile('speech.mp3')
-
-        #Lecteur de commandes
-        if "Je lance la musique" in response:
-            MusicPlayer.playMusic(response.replace("Je lance la musique", ""))
-        if "Arrêt du système" in response:
-            sleep(1)
-            run = False
+            #text to speech
+            tts.createAudioSpeechFromText(response, 'fr-fr', 'Axel', 'speech.mp3')
+            tts.playAudioFile('speech.mp3')
+            tts.removeAudioFile('speech.mp3')
 
 
 #main
