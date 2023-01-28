@@ -1,3 +1,5 @@
+import sys
+sys.path.append("modules")
 import modules.stt as stt
 import modules.ia as ia
 import modules.tts as tts
