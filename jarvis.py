@@ -8,50 +8,44 @@ import modules.commands as commands
 
 class Jarvis:
 
-    run : bool = True
-    command_mode : bool = False
-    response : str = ""
-
-    def startJARVIS(self) -> None:
-        print("\nJARVIS : Bonjour, Monsieur.")
+    def __init__(self) -> None:
+        self.run : bool = True
+        self.command_mode : bool = False
+        self.response : str = ""
  
+    def listen(self) -> str:
+        input : str = ""
+        while (input == ""):
+            input = stt.getTextFromMicrophoneRecord()
+        print("\nUSER : " + input)
 
-    def launch(self) -> None:
+    def say(self, text) -> None:
+        print("\nJARVIS : " + text)
+        tts.createAudioSpeechFromText(text, 'fr-fr', 'Axel', 'audio/speech.mp3')
+        tts.playAudioFile('audio/speech.mp3')
+        tts.removeAudioFile('audio/speech.mp3')
 
-        jarvis.startJARVIS()
 
-        while(self.run):
-            #speech to text
-            question : str
-            question = ""
-            while (question == ""):
-                question = stt.getTextFromMicrophoneRecord()
-
-            print("\nMOI : " + question)
-
-            #Commands
-            commandLauncher = commands.CommandLauncher(self, question.split()[0], question.partition(' ')[2])
-            
-            if (commandLauncher.recognizeCommand()):
-                self.response = commandLauncher.activate()
-                print(self.response)
-                
-            else:
-                if (self.command_mode):
-                    self.response = "Je suis désolé, la commande demandée n'existe pas."
-
-                else:
-                    #text recognition and response
-                    self.response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
-                    print("\nJARVIS : " + self.response)
-
-            #text to speech
-            tts.createAudioSpeechFromText(self.response, 'fr-fr', 'Axel', 'speech.mp3')
-            tts.playAudioFile('speech.mp3')
-            tts.removeAudioFile('speech.mp3')
-
-#main
 if __name__ == "__main__":
 
     jarvis = Jarvis()
-    jarvis.launch()
+    
+    jarvis.say("Bonjour Monsieur.")
+
+    while(jarvis.run):
+        
+        input = jarvis.listen()
+
+        commandLauncher = commands.CommandLauncher(jarvis, input.split()[0], input.partition(' ')[2])
+        
+        if (commandLauncher.recognizeCommand()):
+            jarvis.say(commandLauncher.activate())
+            
+        else:
+            if (jarvis.command_mode):
+                jarvis.say("Je suis désolé, la commande demandée n'existe pas.")
+
+            else:
+                jarvis.say (ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question))
+
+    
