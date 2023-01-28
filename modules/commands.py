@@ -1,7 +1,6 @@
 import datetime
 from time import sleep
 from MusicPlayer import playMusic
-from jarvis import Jarvis
 
 
 keywords_list = {
@@ -19,10 +18,9 @@ class CommandLauncher:
     :param keyword: The keyword to recognize
     :param options: Additional options for the command
     """
-    def __init__(self, jarvis : Jarvis, keyword : str, options : str):
+    def __init__(self, keyword : str, options : str):
         
         self.response = ""
-        self.jarvis = jarvis
         self.keyword = keyword.lower()
         self.options = options.lower()
 
@@ -50,7 +48,6 @@ class CommandLauncher:
         if self.keyword in keywords_list["STOP"]:
             print("Stopping the system...")
             sleep(1)
-            self.jarvis.run = False
 
         #change the command mode
         elif self.keyword in keywords_list["COMMANDE"]:
@@ -67,10 +64,8 @@ class CommandLauncher:
             ]
 
             if (self.options in options_activer):
-                self.jarvis.command_mode = True
                 self.response = "Mode commande activé, monsieur."
             elif (self.options in options_desactiver):
-                self.jarvis.command_mode = False
                 self.response = "Mode commande desactivé, monsieur."
             else:
                 self.response = "Mode inconnu, monsieur."

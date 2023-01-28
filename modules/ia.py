@@ -1,20 +1,24 @@
 import openai
 import keys
+from enum import Enum
 
 openai.api_key = keys.OPENAI_KEY
 
-english_prompt = "Your are now Jarvis, the AI from Iron man. You will now behave exactly like it. If i greet you or ask something, you will reply by calling me sir.\n\n"
-french_prompt = (
-    "Tu es Jarvis, mon IA personnelle et multitâche. Tu es creatif, intelligent et très bavard. Tu as toujours quelque chose à dire et tu n'hésite pas à dire ce qui te passe par la tête. Tu m'appellera Monsieur."
-)
+class Models (Enum):
+    DAVINCI = "text-davinci-003"
+    CURIE = "text-curie-001"
+    BABBAGE = "text-babbage-001"
+    ADA = "text-ada-001"
 
-def getResponseFromGPT3ViaPrompt(model, prompt):
+def getResponseFromGPT3ViaPrompt(model, input, prompt):
+    print(prompt)
+
     response = openai.Completion.create(
-        engine = model,
+        engine = "text-babbage-001",
         prompt = (
-            french_prompt +
-            "Moi: " + prompt +
-            "Jarvis: "
+            prompt +
+            "HUMAN: " + input +
+            "JARVIS: "
         ),
         max_tokens = 200, #100 tokens = 75 mots
         temperature = 0.6,

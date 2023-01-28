@@ -5,17 +5,24 @@ import keys
 import time
 from mutagen.mp3 import MP3
 
-def createAudioSpeechFromText(text, language, voice, path) -> None:
-    response = requests.get(f'http://api.voicerss.org/?key={keys.TTS_KEY}&hl={language}&v={voice}&src={text}&r=2&c=mp3')
-    with open(path, 'wb') as file:
+audioPath = "audio/speech.mp3"
+
+def createAudioSpeechFromText(text, language_code, voice) -> None:
+    response = requests.get(f'http://api.voicerss.org/?key={keys.TTS_KEY}&hl={language_code}&v={voice}&src={text}&r=2&c=mp3')
+    with open(audioPath, 'wb') as file:
         file.write(response.content)
 
-def playAudioFile(path) -> None:
-    with open(path, 'rb') as file:
-        playsound.playsound(path)
-        audio = MP3(path)
+def playAudioFile() -> None:
+    with open(audioPath, 'rb') as file:
+        playsound.playsound(audioPath)
+        audio = MP3(audioPath)
         time.sleep(audio.info.length-1)
         file.close()
 
-def removeAudioFile(path) -> None:
-    os.remove(path)
+def removeAudioFile() -> None:
+    os.remove(audioPath)
+
+def play(text, language_code, voice):
+    createAudioSpeechFromText(text, language_code, voice)
+    playAudioFile()
+    removeAudioFile()
