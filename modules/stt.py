@@ -1,5 +1,4 @@
 import speech_recognition as sr
-import tts
 
 def getTextFromMicrophoneRecord():
     r = sr.Recognizer()
@@ -20,12 +19,8 @@ def getTextFromMicrophoneRecord():
             return text
 
         except sr.UnknownValueError:
-            tts.createAudioSpeechFromText("Je n'ai pas compris votre requête", "fr-fr", "Axel", "speech.mp3")
-            tts.playAudioFile("speech.mp3")
-            tts.removeAudioFile("speech.mp3")
+            print("Je n'ai pas compris votre requête", "fr-fr", "Axel", "speech.mp3")
         except sr.RequestError:
-            tts.createAudioSpeechFromText("Une erreur s'est produite", "fr-fr", "Axel", "speech.mp3")
-            tts.playAudioFile("speech.mp3")
-            tts.removeAudioFile("speech.mp3")
+            ("Une erreur s'est produite", "fr-fr", "Axel", "speech.mp3")
 
     return input

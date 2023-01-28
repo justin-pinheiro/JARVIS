@@ -1,5 +1,4 @@
 import datetime
-import MusicPlayer
 from time import sleep
 from MusicPlayer import playMusic
 from jarvis import Jarvis
@@ -8,7 +7,8 @@ from jarvis import Jarvis
 keywords_list = {
     "STOP": ["stop", "stoppe"],
     "DATE": ["date"],
-    "PLAY": ["joue", "lance"]
+    "PLAY": ["joue", "lance"],
+    "COMMANDE": ["commande"],
 }
 
 class CommandLauncher:
@@ -21,6 +21,7 @@ class CommandLauncher:
     """
     def __init__(self, jarvis : Jarvis, keyword : str, options : str):
         
+        self.response = ""
         self.jarvis = jarvis
         self.keyword = keyword.lower()
         self.options = options.lower()
@@ -41,7 +42,9 @@ class CommandLauncher:
     """
     Activate the command.
     """
-    def activate(self) -> None:
+    def activate(self) -> str:
+        
+        print(f"command : keyword[{self.keyword}] options[{self.options}]")
 
         #stop the system
         if self.keyword in keywords_list["STOP"]:
@@ -49,6 +52,29 @@ class CommandLauncher:
             sleep(1)
             self.jarvis.run = False
 
+        #change the command mode
+        elif self.keyword in keywords_list["COMMANDE"]:
+
+            options_activer = [
+                "activer",
+                "activé",
+                "activée",
+            ]
+            options_desactiver = [
+                "désactiver",
+                "désactivé",
+                "désactivée",
+            ]
+
+            if (self.options in options_activer):
+                self.jarvis.command_mode = True
+                self.response = "Mode commande activé, monsieur."
+            elif (self.options in options_desactiver):
+                self.jarvis.command_mode = False
+                self.response = "Mode commande desactivé, monsieur."
+            else:
+                self.response = "Mode inconnu, monsieur."
+            
         #print current date
         elif self.keyword in keywords_list["DATE"]:
             date = datetime.datetime.now()
@@ -61,5 +87,7 @@ class CommandLauncher:
         #print error message
         else:
             print("COMMAND ERROR: keyword ["+ self.keyword +"] not recognized")
+
+        return self.response
 
          
