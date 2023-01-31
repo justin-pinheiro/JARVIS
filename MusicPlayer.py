@@ -34,7 +34,6 @@ def playMusic(musicName : str):
 
     #Open the link and launch the music
     driver.get(link)
-    driver.maximize_window()
     driver.find_element(By.CSS_SELECTOR, "form[jsaction='JIbuQc:ldDdv(b3VHJd)']").click()
 
     #pause to not quit the driver
