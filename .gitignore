@@ -3,3 +3,4 @@ __pycache__
 keys.py
 audiosamples/*
 .env
+test.py
