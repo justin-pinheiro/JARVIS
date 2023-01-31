@@ -8,7 +8,7 @@ import modules.commands as commands
 import modules.Language as Language
 from modules.Language import Languages
 
-
+ 
 class Jarvis:
     def __init__(self, language, GPTmodel : str, commandMode : bool) -> None:
         self.run :  bool = True
