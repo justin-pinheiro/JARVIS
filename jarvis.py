@@ -1,49 +1,49 @@
-import stt
-import ia
-import tts
-import commands
+import sys
+sys.path.append("modules")
+
+import modules.stt as stt
+import modules.ia as ia
+import modules.tts as tts
+import modules.commands as commands
+import modules.Language as Language
+from modules.Language import Languages
 
 
 class Jarvis:
+    def __init__(self, language, GPTmodel : str, commandMode : bool) -> None:
+        self.run :  bool = True
+        self.command_mode : bool = commandMode
+        self.language = language
+        self.GPTmodel : str = GPTmodel
+ 
+    def listen(self) -> str:
+        input : str = ""
+        while (input == ""):
+            input = stt.getTextFromMicrophoneRecord(Language.getSTTCode(self.language))
+        print("\nUSER : " + input)
+        return input
 
-    run : int = True
+    def say(self, text:str) -> None:
+        print("\nJARVIS : " + text)
+        tts.play(text, Language.getTTScode(self.language), Language.getVoice(self.language))
 
-    def startJARVIS(self) -> None:
-
-        print("\nJARVIS : " + "Initialisation du système... Système opérationnel. Bonjour, Monsieur.")
-        tts.playAudioFile('initSpeech.mp3')
-
-
-    def launch(self) -> None:
-
-        while(self.run):
-            #speech to text
-            question : str
-            question = ""
-            while (question == ""):
-                question = stt.getTextFromMicrophoneRecord()
-
-            print("\nMOI : " + question)
-
-            #Commands
-            commandLauncher = commands.CommandLauncher(self, question.split()[0], question.partition(' ')[2])
-            
-            if (commandLauncher.recognizeCommand()):
-                commandLauncher.activate()
-                
+    def process(self, input):
+        commandLauncher = commands.CommandLauncher(input.split()[0], input.partition(' ')[2])
+        if (commandLauncher.recognizeCommand()):
+            self.say(commandLauncher.activate())
+        else:
+            if (self.command_mode):
+                self.say(Language.unknownCommand(self.language))
             else:
-                #text recognition and response
-                response : str
-                response = ia.getResponseFromGPT3ViaPrompt("text-babbage-001", question)
-                print("\nJARVIS : " + response)
+                self.say (ia.getResponseFromGPT3ViaPrompt(self.GPTmodel, input, Language.getPrompt(self.language)))
 
-                #text to speech
-                tts.createAudioSpeechFromText(response, 'fr-fr', 'Axel', 'speech.mp3')
-                tts.playAudioFile('speech.mp3')
-                tts.removeAudioFile('speech.mp3')
 
-#main
+
 if __name__ == "__main__":
 
-    jarvis = Jarvis()
-    jarvis.launch()
+    jarvis = Jarvis(Languages.FRENCH, ia.Models.BABBAGE, False)
+
+    jarvis.say(Language.greetings(jarvis.language))
+
+    while(jarvis.run):
+        jarvis.process(jarvis.listen())
