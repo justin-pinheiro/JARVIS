@@ -1,4 +1,5 @@
-.vscode/
-__pycache__/
+.vscode
+__pycache__
 keys.py
-speech.mp3
+audiosamples/*
+.env

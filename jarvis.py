@@ -6,26 +6,26 @@ import modules.ia as ia
 import modules.tts as tts
 import modules.commands as commands
 import modules.Language as Language
-from modules.Language import Languages
+from modules.Language import Language
 
  
 class Jarvis:
-    def __init__(self, language, GPTmodel : str, commandMode : bool) -> None:
+    def __init__(self, lang, GPTmodel : str, commandMode : bool) -> None:
         self.run :  bool = True
         self.command_mode : bool = commandMode
-        self.language = language
+        self.language = Language(lang)
         self.GPTmodel : str = GPTmodel
  
     def listen(self) -> str:
         input : str = ""
         while (input == ""):
-            input = stt.getTextFromMicrophoneRecord(Language.getSTTCode(self.language))
+            input = stt.getTextFromMicrophoneRecord(self.language.sttCode)
         print("\nUSER : " + input)
         return input
 
     def say(self, text:str) -> None:
         print("\nJARVIS : " + text)
-        tts.play(text, Language.getTTScode(self.language), Language.getVoice(self.language))
+        tts.play(text, self.language.ttsCode, self.language.voice)
 
     def process(self, input):
         commandLauncher = commands.CommandLauncher(input.split()[0], input.partition(' ')[2])
@@ -33,17 +33,17 @@ class Jarvis:
             self.say(commandLauncher.activate())
         else:
             if (self.command_mode):
-                self.say(Language.unknownCommand(self.language))
+                self.say(self.language.unknownCommand)
             else:
-                self.say (ia.getResponseFromGPT3ViaPrompt(self.GPTmodel, input, Language.getPrompt(self.language)))
+                self.say (ia.getResponseFromGPT3ViaPrompt(self.GPTmodel, input, self.language.prompt))
 
 
 
 if __name__ == "__main__":
 
-    jarvis = Jarvis(Languages.FRENCH, ia.Models.BABBAGE, False)
+    jarvis = Jarvis("french", ia.Models.BABBAGE, False)
 
-    jarvis.say(Language.greetings(jarvis.language))
+    jarvis.say(jarvis.language.greetings)
 
     while(jarvis.run):
         jarvis.process(jarvis.listen())
