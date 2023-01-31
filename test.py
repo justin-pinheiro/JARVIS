@@ -10,16 +10,15 @@ import speech_recognition as sr
 import pyaudio
 
 
-class Sentence():
+class Command():
     def __init__(self, content):
         self.content = content
-        self.isCmd = self.checkForCmd()
+        self.action = self.detectAction()
         self.length = 0
 
-    def checkForCmd(self):
+    def detectAction(self):
         # if self.content.sta
         pass
-
 
 class TTSContext():
 
@@ -34,9 +33,9 @@ class TTSContext():
         text = urllib.parse(text)
         self.url = f'http://api.voicerss.org/?key={self.__key}&hl={self.lang}&v={self.voice}&r=2&c=wav&src={text}'
 
-    def playSentence(self, sentence: Sentence, remove=True):
+    def playCommand(self, text, remove=True):
         CHUNK = 1024
-        res = requests.get(self.__getUrl(sentence.content))
+        res = requests.get(self.__getUrl(text))
         self.path = f"./audiosamples/{uuid.uuid4()}.wav"
         with open(self.path, 'wb') as f:
             f.write(res.content)
@@ -64,16 +63,18 @@ class MicContext():
         self.mic = sr.Microphone()
         self.sentence
 
-    def getSentence(self):
+    def getCommand(self):
         with self.mic as source:
             self.reco.adjust_for_ambient_noise(source)
             audio = self.reco.listen(source)
             try:
-                return Sentence(self.reco.recognize_sphinx(audio))
+                return Command(self.reco.recognize_sphinx(audio))
             except:
                 raise
 
-
+class AiContext():
+    def __init__():
+        pass
 #         # text recognition and response
 #         response = ia.getResponseFromGPT3ViaPrompt(
 #             "text-babbage-001", question)
@@ -94,27 +95,31 @@ class Jarvis():
         self.say("Bonjour, Monsieur")
         self.say("Je suis à votre écoute")
         while self.running:
-            prompt = self.listen()
-            if prompt.isCmd:
-                pass
-            answer = self.processAnswer(prompt)
-            self.say(answer)
+            try:
+                question = self.listen()
+                # if question.isCmd:
+                #     pass
+                # gerer si la fonction est une commande on appelle le gestionnaire etc 
+                answer = self.processAnswer(question)
+                self.say(answer)
+            except: pass # on passe au Q&A suivant
         self.say("Arrêt du système")
             
 
-    def say(self, sentence: Sentence):
-        print(f"JARVIS \t: {sentence.text}")
-        self.ttsctx.playSentence(sentence)
+    def say(self, text):
+        print(f"JARVIS \t: {text}")
+        self.ttsctx.playCommand(text)
 
     def listen(self):
         print(f"YOU \t: ...", end='\b')
         try:
-            question = self.micctx.getSentence()
-
-        except sr.UnknownValueError as e:
-
-        except sr.RequestError as e:
-            raise e
+            return self.micctx.getCommand()
+        except sr.UnknownValueError:
+            self.say("Je n'ai pas compris votre requete, je vous prie de reformuler votre requête Monsieur")
+            raise
+        except sr.RequestError:
+            self.say("Je n'ai pas pu vous comprendre car la requète sphinx à rencontré une erreur. Vous pouvez réessayer Monsieur")
+            raise
 
     def pause(self):
         pass
@@ -124,6 +129,10 @@ class Jarvis():
 
     def stop(self):
         self.running = False
+    
+    def cmdManager(self, cmd):
+        pass
+        # if()
 
 
 if __name__ == "__main__":
