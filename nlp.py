@@ -4,13 +4,15 @@ from spacy.util import minibatch, compounding
 from spacy.training import Example
 from pathlib import Path
 
-nlp=spacy.load('en_core_web_sm')
+def train():
+  nlp=spacy.load('en_core_web_sm')
+  
 
-# Getting the pipeline component
-ner=nlp.get_pipe("ner")
+  # Getting the pipeline component
+  ner=nlp.get_pipe("ner")
 
-# training data
-TRAIN_DATA = [
+  # training data
+  TRAIN_DATA = [
               ("Hello there", {"entities": [(0, 5, "GREETING")]}),
               ("Good morning", {"entities": [(0, 12, "GREETING")]}),
               ("Good morning Jarvis", {"entities": [(0, 12, "GREETING")]}),
@@ -75,38 +77,36 @@ TRAIN_DATA = [
               # ("Play Smooth Criminal", {"entities": [(5, 17, "MUSIC_NAME")]}),
               ]
 
-# Adding labels to the `ner`
-for _, annotations in TRAIN_DATA:
-  for ent in annotations.get("entities"):
+  for _, annotations in TRAIN_DATA:
+    for ent in annotations.get("entities"):
       ner.add_label(ent[2])
 
-# Disable pipeline components you dont need to change
-pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
-unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
+  pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+  unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
 
-# TRAINING THE MODEL
-with nlp.disable_pipes(*unaffected_pipes):
+  with nlp.disable_pipes(*unaffected_pipes):
+    for _ in range(30):
+      random.shuffle(TRAIN_DATA)
+      batches = minibatch(TRAIN_DATA, size=compounding(4.0, 32.0, 1.001))
+      for batch in batches:
+          for text, annotations in batch:
+              doc = nlp.make_doc(text)
+              example = Example.from_dict(doc, annotations)
+              test = spacy.training.offsets_to_biluo_tags(doc, annotations.get("entities"))
+              # if '-' in test:
+              #   print(text, ' | ', text[annotations.get("entities")[0][0]:annotations.get("entities")[0][1]], " | ", test)
+              texts, annotations = zip(*batch)
+              nlp.update(
+                          [example],
+                          losses={},
+                          drop=0.7,  # dropout - make it harder to memorise data
+                      )
+  
+  nlp.to_disk("models/nlp_en")
 
-  # Training for 30 iterations
-  for iteration in range(30):
+def getEntitiesFromSentence(sentence : str) :
+  nlp_updated = spacy.load("models/nlp_en")
+  doc = nlp_updated(sentence)
+  return [(ent.text, ent.label_) for ent in doc.ents]
 
-    # shuufling examples  before every iteration
-    random.shuffle(TRAIN_DATA)
-    # batch up the examples using spaCy's minibatch
-    batches = minibatch(TRAIN_DATA, size=compounding(4.0, 32.0, 1.001))
-    for batch in batches:
-        for text, annotations in batch:
-            doc = nlp.make_doc(text)
-            example = Example.from_dict(doc, annotations)
-            test = spacy.training.offsets_to_biluo_tags(doc, annotations.get("entities"))
-            if '-' in test:
-              print(text, ' | ', text[annotations.get("entities")[0][0]:annotations.get("entities")[0][1]], " | ", test)
-            texts, annotations = zip(*batch)
-            nlp.update(
-                        [example],
-                        losses={},
-                        drop=0.7,  # dropout - make it harder to memorise data
-                    )
-
-doc = nlp("good morning jarvis play the song b boys making with the freak")
-print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+print(getEntitiesFromSentence("Play the song Lose Yourself"))
