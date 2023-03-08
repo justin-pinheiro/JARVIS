@@ -11,35 +11,34 @@ start_time = time.time()
 def train():
   nlp=spacy.load('en_core_web_sm')
   
-
   # Getting the pipeline component
   ner=nlp.get_pipe("ner")
 
   # training data
   TRAIN_DATA = [
               #Greetings
-              ("Hello there", {"entities": [(0, 5, "GREETING")]}),
-              ("Good morning", {"entities": [(0, 12, "GREETING")]}),
-              ("Good morning Jarvis", {"entities": [(0, 12, "GREETING")]}),
-              ("Greetings", {"entities": [(0, 9, "GREETING")]}),
-              ("Greetings Jarvis", {"entities": [(0, 9, "GREETING")]}),
-              ("Hiya", {"entities": [(0, 4, "GREETING")]}),
-              ("Hey", {"entities": [(0, 3, "GREETING")]}),
-              ("Hey Jarvis", {"entities": [(0, 3, "GREETING")]}),
-              ("Hi everyone", {"entities": [(0, 2, "GREETING")]}),
-              ("What's up", {"entities": [(0, 9, "GREETING")]}),
-              ("Good day", {"entities": [(0, 8, "GREETING")]}),
-              ("Hello", {"entities": [(0, 5, "GREETING")]}),
-              ("Hello Jarvis", {"entities": [(0, 5, "GREETING")]}),
-              ("Hi there", {"entities": [(0, 8, "GREETING")]}),
-              ("Howdy", {"entities": [(0, 5, "GREETING")]}),
-              ("Yo", {"entities": [(0, 2, "GREETING")]}),
-              ("Hola", {"entities": [(0, 4, "GREETING")]}),
-              ("Salutations", {"entities": [(0, 11, "GREETING")]}),
-              ("Hi", {"entities": [(0, 2, "GREETING")]}),
-              ("Hi Jarvis", {"entities": [(0, 2, "GREETING")]}),
-              ("Good evening", {"entities": [(0, 12, "GREETING")]}),
-              ("Good evening Jarvis", {"entities": [(0, 12, "GREETING")]}),
+              ("hello there", {"entities": [(0, 5, "GREETING")]}),
+              ("good morning", {"entities": [(0, 12, "GREETING")]}),
+              ("good morning jarvis", {"entities": [(0, 12, "GREETING")]}),
+              ("greetings", {"entities": [(0, 9, "GREETING")]}),
+              ("greetings jarvis", {"entities": [(0, 9, "GREETING")]}),
+              ("hiya", {"entities": [(0, 4, "GREETING")]}),
+              ("hey", {"entities": [(0, 3, "GREETING")]}),
+              ("hey jarvis", {"entities": [(0, 3, "GREETING")]}),
+              ("hi everyone", {"entities": [(0, 2, "GREETING")]}),
+              ("what's up", {"entities": [(0, 9, "GREETING")]}),
+              ("good day", {"entities": [(0, 8, "GREETING")]}),
+              ("hello", {"entities": [(0, 5, "GREETING")]}),
+              ("hello jarvis", {"entities": [(0, 5, "GREETING")]}),
+              ("hi there", {"entities": [(0, 8, "GREETING")]}),
+              ("howdy", {"entities": [(0, 5, "GREETING")]}),
+              ("yo", {"entities": [(0, 2, "GREETING")]}),
+              ("hola", {"entities": [(0, 4, "GREETING")]}),
+              ("salutations", {"entities": [(0, 11, "GREETING")]}),
+              ("hi", {"entities": [(0, 2, "GREETING")]}),
+              ("hi jarvis", {"entities": [(0, 2, "GREETING")]}),
+              ("good evening", {"entities": [(0, 12, "GREETING")]}),
+              ("good evening jarvis", {"entities": [(0, 12, "GREETING")]}),
               #Music
               ("Play Back in Black", {"entities": [(5, 18, "MUSIC_NAME")]}),
               ("Play the song Back in Black", {"entities": [(14, 27, "MUSIC_NAME")]}),
@@ -87,6 +86,26 @@ def train():
               ("is it a good day for outdoor activities", {"entities": [(0, 39, "WEATHER")]}),
               ("what's the weather like in the evening", {"entities": [(0, 38, "WEATHER")]}),
               ("are we expecting any storms today", {"entities": [(0, 33, "WEATHER")]}),
+              #News
+              ("what's the news today", {"entities": [(0, 21, "NEWS")]}),
+              ("can you update me with the latest news", {"entities": [(0, 38, "NEWS")]}),
+              ("tell me what's happening in the world", {"entities": [(0, 37, "NEWS")]}),
+              ("do you have any news for me", {"entities": [(0, 27, "NEWS")]}),
+              ("what's been going on lately", {"entities": [(0, 27, "NEWS")]}),
+              ("what's new in the world today", {"entities": [(0, 29, "NEWS")]}),
+              ("can you tell me the top news stories", {"entities": [(0, 36, "NEWS")]}),
+              ("i need an update on current events", {"entities": [(0, 34, "NEWS")]}),
+              ("anything interesting in the news today", {"entities": [(0, 38, "NEWS")]}),
+              ("what are the headlines for today", {"entities": [(0, 32, "NEWS")]}),
+              ("what's the latest news in the world", {"entities": [(0, 35, "NEWS")]}),
+              ("what's the breaking news today", {"entities": [(0, 30, "NEWS")]}),
+              ("can you give me a news update", {"entities": [(0, 29, "NEWS")]}),
+              ("what are the current news stories", {"entities": [(0, 33, "NEWS")]}),
+              ("i haven't been keeping up with the news, what's happening", {"entities": [(0, 57, "NEWS")]}),
+              ("any important news to report", {"entities": [(0, 28, "NEWS")]}),
+              ("what's happening around the world", {"entities": [(0, 33, "NEWS")]}),
+              ("can you give me a rundown of the news", {"entities": [(0, 37, "NEWS")]}),
+              ("tell me about the latest news development", {"entities": [(0, 41, "NEWS")]}),
               ]
 
   for _, annotations in TRAIN_DATA:
@@ -111,7 +130,7 @@ def train():
               nlp.update(
                           [example],
                           losses={},
-                          drop=0.7,  # dropout - make it harder to memorise data
+                          drop=0.5,  # dropout - make it harder to memorise data
                       )
   
   nlp.to_disk("models/nlp_en")
@@ -121,5 +140,5 @@ def getEntitiesFromSentence(sentence : str) :
   doc = nlp_updated(sentence)
   return [(ent.text, ent.label_) for ent in doc.ents]
 
-print(getEntitiesFromSentence("jarvis how is the weather today"))
+print(getEntitiesFromSentence("hello jarvis what's the weather like"))
 print("--- %s seconds ---" % (time.time() - start_time))
