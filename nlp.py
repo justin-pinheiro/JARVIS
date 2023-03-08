@@ -3,6 +3,10 @@ import random
 from spacy.util import minibatch, compounding
 from spacy.training import Example
 from pathlib import Path
+import time
+
+
+start_time = time.time()
 
 def train():
   nlp=spacy.load('en_core_web_sm')
@@ -13,6 +17,7 @@ def train():
 
   # training data
   TRAIN_DATA = [
+              #Greetings
               ("Hello there", {"entities": [(0, 5, "GREETING")]}),
               ("Good morning", {"entities": [(0, 12, "GREETING")]}),
               ("Good morning Jarvis", {"entities": [(0, 12, "GREETING")]}),
@@ -35,6 +40,7 @@ def train():
               ("Hi Jarvis", {"entities": [(0, 2, "GREETING")]}),
               ("Good evening", {"entities": [(0, 12, "GREETING")]}),
               ("Good evening Jarvis", {"entities": [(0, 12, "GREETING")]}),
+              #Music
               ("Play Back in Black", {"entities": [(5, 18, "MUSIC_NAME")]}),
               ("Play the song Back in Black", {"entities": [(14, 27, "MUSIC_NAME")]}),
               ("Play the song Back in Black from AC/DC", {"entities": [(14, 27, "MUSIC_NAME")]}),
@@ -43,38 +49,44 @@ def train():
               ("Launch Back in Black from AC/DC", {"entities": [(7, 20, "MUSIC_NAME")]}),
               ("Play Bad Romance", {"entities": [(5, 16, "MUSIC_NAME")]}),
               ("Play the song Bad Romance", {"entities": [(14, 25, "MUSIC_NAME")]}),
-              # ("Launch Bad Romance", {"entities": [(7, 17, "MUSIC_NAME")]}),
-              # ("Play Till I Collapse", {"entities": [(5, 19, "MUSIC_NAME")]}),
-              # ("Play the song Till I Collapse", {"entities": [(14, 28, "MUSIC_NAME")]}),
-              # ("Launch Till I Collapse", {"entities": [(7, 21, "MUSIC_NAME")]}),
-              # ("Play Merry Christmas", {"entities": [(5, 19, "MUSIC_NAME")]}),
-              # ("Play the song Merry Christmas", {"entities": [(14, 28, "MUSIC_NAME")]}),
-              # ("Launch Merry Christmas", {"entities": [(7, 21, "MUSIC_NAME")]}),
-              # ("Play Back in Black", {"entities": [(5, 17, "MUSIC_NAME")]}),
-              # ("Play the song Back in Black", {"entities": [(14, 26, "MUSIC_NAME")]}),
-              # ("Play Sweet Child o' Mine", {"entities": [(5, 20, "MUSIC_NAME")]}),
-              # ("Play the song Sweet Child o' Mine", {"entities": [(14, 29, "MUSIC_NAME")]}),
-              # ("Play Stairway to Heaven", {"entities": [(5, 20, "MUSIC_NAME")]}),
-              # ("Play the song Stairway to Heaven", {"entities": [(14, 29, "MUSIC_NAME")]}),
-              # ("Play Wonderwall", {"entities": [(5, 14, "MUSIC_NAME")]}),
-              # ("Play the song Wonderwall", {"entities": [(14, 23, "MUSIC_NAME")]}),
-              # ("Play Livin' on a Prayer", {"entities": [(5, 20, "MUSIC_NAME")]}),
-              # ("Play the song Livin' on a Prayer", {"entities": [(14, 29, "MUSIC_NAME")]}),
-              # ("Play Hotel California", {"entities": [(5, 19, "MUSIC_NAME")]}),
-              # ("Play the song Hotel California", {"entities": [(14, 28, "MUSIC_NAME")]}),
-              # ("Play Don't Stop Believin'", {"entities": [(5, 22, "MUSIC_NAME")]}),
-              # ("Play the song Don't Stop Believin'", {"entities": [(14, 31, "MUSIC_NAME")]}),
-              # ("Play Billie Jean", {"entities": [(5, 14, "MUSIC_NAME")]}),
-              # ("Play the song Billie Jean", {"entities": [(14, 23, "MUSIC_NAME")]}),
-              # ("Play Bohemian Rhapsody", {"entities": [(5, 19, "MUSIC_NAME")]}),
-              # ("Play the song Bohemian Rhapsody", {"entities": [(14, 28, "MUSIC_NAME")]}),
-              # ("Play With or Without You", {"entities": [(5, 20, "MUSIC_NAME")]}),
-              # ("Play the song With or Without You", {"entities": [(14, 29, "MUSIC_NAME")]}),
-              # ("Play I Will Always Love You", {"entities": [(5, 21, "MUSIC_NAME")]}),
-              # ("Play the song I Will Always Love You", {"entities": [(14, 30, "MUSIC_NAME")]}),
-              # ("Play Every Breath You Take", {"entities": [(5, 22, "MUSIC_NAME")]}),
-              # ("Play the song Every Breath You Take", {"entities": [(14, 31, "MUSIC_NAME")]}),
-              # ("Play Smooth Criminal", {"entities": [(5, 17, "MUSIC_NAME")]}),
+              ("Launch Bad Romance", {"entities": [(7, 18, "MUSIC_NAME")]}),
+              ("Play Till I Collapse", {"entities": [(5, 20, "MUSIC_NAME")]}),
+              ("Play the song Till I Collapse", {"entities": [(14, 29, "MUSIC_NAME")]}),
+              ("Launch Till I Collapse", {"entities": [(7, 22, "MUSIC_NAME")]}),
+              ("Play Merry Christmas", {"entities": [(5, 20, "MUSIC_NAME")]}),
+              ("Play the song Merry Christmas", {"entities": [(14, 29, "MUSIC_NAME")]}),
+              ("Launch Merry Christmas", {"entities": [(7, 22, "MUSIC_NAME")]}),
+              ("Play Sweet Child o' Mine", {"entities": [(5, 24, "MUSIC_NAME")]}),
+              ("Play the song Sweet Child o' Mine", {"entities": [(14, 33, "MUSIC_NAME")]}),
+              ("Play Stairway to Heaven", {"entities": [(5, 23, "MUSIC_NAME")]}),
+              ("Play the song Stairway to Heaven", {"entities": [(14, 32, "MUSIC_NAME")]}),
+              ("Play Wonderwall", {"entities": [(5, 15, "MUSIC_NAME")]}),
+              ("Play the song Wonderwall", {"entities": [(14, 24, "MUSIC_NAME")]}),
+              ("Play Livin' on a Prayer", {"entities": [(5, 23, "MUSIC_NAME")]}),
+              ("Play the song Livin' on a Prayer", {"entities": [(14, 32, "MUSIC_NAME")]}),
+              ("Play Hotel California", {"entities": [(5, 21, "MUSIC_NAME")]}),
+              ("Play the song Hotel California", {"entities": [(14, 30, "MUSIC_NAME")]}),
+              #Weather
+              ("what is the weather like", {"entities": [(0, 24, "WEATHER")]}),
+              ("how's the weather today", {"entities": [(0, 23, "WEATHER")]}),
+              ("what's the forecast like", {"entities": [(0, 24, "WEATHER")]}),
+              ("is it sunny outside", {"entities": [(0, 19, "WEATHER")]}),
+              ("are we expecting rain today", {"entities": [(0, 27, "WEATHER")]}),
+              ("do i need an umbrella today", {"entities": [(0, 27, "WEATHER")]}),
+              ("what kind of weather are we having", {"entities": [(0, 34, "WEATHER")]}),
+              ("is it hot or cold outside", {"entities": [(0, 25, "WEATHER")]}),
+              ("how's the weather looking", {"entities": [(0, 25, "WEATHER")]}),
+              ("what's the temperature like outside", {"entities": [(0, 35, "WEATHER")]}),
+              ("is it windy outside", {"entities": [(0, 19, "WEATHER")]}),
+              ("is it snowing today", {"entities": [(0, 19, "WEATHER")]}),
+              ("what's the weather forecast for today", {"entities": [(0, 37, "WEATHER")]}),
+              ("is it humid outside today", {"entities": [(0, 25, "WEATHER")]}),
+              ("what's the weather like in your area", {"entities": [(0, 36, "WEATHER")]}),
+              ("is it foggy outside", {"entities": [(0, 19, "WEATHER")]}),
+              ("what's the weather situation right now", {"entities": [(0, 38, "WEATHER")]}),
+              ("is it a good day for outdoor activities", {"entities": [(0, 39, "WEATHER")]}),
+              ("what's the weather like in the evening", {"entities": [(0, 38, "WEATHER")]}),
+              ("are we expecting any storms today", {"entities": [(0, 33, "WEATHER")]}),
               ]
 
   for _, annotations in TRAIN_DATA:
@@ -93,8 +105,8 @@ def train():
               doc = nlp.make_doc(text)
               example = Example.from_dict(doc, annotations)
               test = spacy.training.offsets_to_biluo_tags(doc, annotations.get("entities"))
-              # if '-' in test:
-              #   print(text, ' | ', text[annotations.get("entities")[0][0]:annotations.get("entities")[0][1]], " | ", test)
+              if '-' in test:
+                print(text, ' | ', text[annotations.get("entities")[0][0]:annotations.get("entities")[0][1]], " | ", test)
               texts, annotations = zip(*batch)
               nlp.update(
                           [example],
@@ -109,4 +121,5 @@ def getEntitiesFromSentence(sentence : str) :
   doc = nlp_updated(sentence)
   return [(ent.text, ent.label_) for ent in doc.ents]
 
-print(getEntitiesFromSentence("Play the song Lose Yourself"))
+print(getEntitiesFromSentence("jarvis how is the weather today"))
+print("--- %s seconds ---" % (time.time() - start_time))
