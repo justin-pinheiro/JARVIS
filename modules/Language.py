@@ -12,7 +12,7 @@
 #         self.unknownCommand = langObj.unknownCommand
 #         self.greetings = langObj.greetings
 
-
+import random
 from enum import Enum
 
 class Languages (Enum):
@@ -69,7 +69,23 @@ def unknownCommand(language) -> str:
 def greetings(language) -> str:
     match language:
         case Languages.ENGLISH: 
-            return "Hello, Sir."
+            return random.choice([   
+                    "Hello sir. How may I assist you today?",    
+                    "Hi sir. How can I help you?",    
+                    "Greetings sir. What can I do for you?",    
+                    "Hi sir, how may I be of service to you?",    
+                    "Good day sir. What can I do for you?",    
+                    "Hey sir. How may I assist you?",    
+                    "Welcome back sir. How can I help you today?",    
+                    "Hi sir, how can I be of assistance?",    
+                    "Hello sir, how may I assist you today?",    
+                    "Hi sir, what can I help you with?",    
+                    "Good to see you sir. What can I do for you?",    
+                    "Hi sir, how may I assist you with your tasks?",    
+                    "Hi sir, how can I help you be more productive today?",   
+                    "Good morning sir. What can I help you with today?",  
+                    "Hey sir, how may I assist you with your work?"   
+                ])
         case Languages.FRENCH:
             return "Bonjour, Monsieur."
         case Languages.SPANISH:

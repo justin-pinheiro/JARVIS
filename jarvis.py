@@ -4,7 +4,8 @@ sys.path.append("modules")
 import modules.stt as stt
 import modules.ia as ia
 import modules.tts as tts
-import modules.commands as commands
+import modules.news as news
+import modules.chess as chess
 import modules.Language as Language
 from modules.Language import Languages
 import nlp 
@@ -12,9 +13,10 @@ import nlp
 class Jarvis:
     def __init__(self, language, GPTmodel : str, commandMode : bool) -> None:
         self.run :  bool = True
-        self.command_mode : bool = commandMode
+        self.chessMode : bool = False
         self.language = language
         self.GPTmodel : str = GPTmodel
+        self.chess = chess.Chess(1,False)
  
     def listen(self) -> str:
         inp = ""
@@ -29,23 +31,26 @@ class Jarvis:
 
     def process(self, inp):
         inp = inp.lower()
-        print("processing : ", inp)
-        # peut etre enlever des caractères
-        for entity in nlp.getEntitiesFromSentence(inp):
-            print(entity)
-            if entity[1] == "MUSIC_NAME":
-                print("y'a de la musique par ici")
-            if entity[1] == "GREETING":
-                print("bonjour a toi")
-        # commandLauncher = commands.CommandLauncher(input.split()[0], input.partition(' ')[2])
-        # if (commandLauncher.recognizeCommand()):
-        #     self.say(commandLauncher.activate())
-        # else:
-        #     if (self.command_mode):
-        #         self.say(Language.unknownCommand(self.language))
-        #     else:
-        #         self.say (ia.getResponseFromGPT3ViaPrompt(self.GPTmodel, input, Language.getPrompt(self.language)))
-
+        if self.chessMode:
+            move = "a"
+            for entity in nlp.getChessMove(inp):
+                print(entity)
+                move = self.chess.getPlayerMove(entity[1], entity[0])
+                print(move)
+            return move
+                
+        else:
+            for entity in nlp.getEntitiesFromSentence(inp):
+                print(entity)
+                if entity[1] == "GREETING":
+                    self.say(Language.greetings(jarvis.language))
+                if entity[1] == "NEWS":
+                    self.say(news.getHeadlines())
+                if entity[1] == "CHESS":
+                    self.say("Sure, let's play chess. I will play as white.")
+                    self.chessMode = True
+                    self.chess = chess.Chess(1,False)
+            return ""
 
 
 if __name__ == "__main__":
@@ -55,4 +60,25 @@ if __name__ == "__main__":
     jarvis.say(Language.greetings(jarvis.language))
 
     while(jarvis.run):
-        jarvis.process(jarvis.listen())
+        if(jarvis.chessMode):
+            while (not jarvis.chess.isCheckmate()):
+                #white to move
+                if (jarvis.chess.player_is_white):
+                    move = "a"
+                    while (not jarvis.chess.isMoveLegal(move)):
+                        move = jarvis.process(jarvis.listen())
+                else:
+                    move = jarvis.chess.getAIMove()
+                    jarvis.say("i play " + move)
+                jarvis.chess.playMove(move)
+                #black to move
+                if (not jarvis.chess.player_is_white):
+                    move = "a"
+                    while (not jarvis.chess.isMoveLegal(move)):
+                        move = jarvis.process(jarvis.listen())
+                else:
+                    move = jarvis.chess.getAIMove()
+                    jarvis.say("i play " + move)
+                jarvis.chess.playMove(move)
+        else:
+            jarvis.process(jarvis.listen())

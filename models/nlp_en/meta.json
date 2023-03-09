@@ -127,6 +127,7 @@
     ],
     "ner":[
       "CARDINAL",
+      "CHESS",
       "DATE",
       "EVENT",
       "FAC",

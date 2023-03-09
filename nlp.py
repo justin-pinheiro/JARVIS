@@ -8,7 +8,7 @@ import time
 
 start_time = time.time()
 
-def train():
+def train_nlp_en():
   nlp=spacy.load('en_core_web_sm')
   
   # Getting the pipeline component
@@ -106,6 +106,22 @@ def train():
               ("what's happening around the world", {"entities": [(0, 33, "NEWS")]}),
               ("can you give me a rundown of the news", {"entities": [(0, 37, "NEWS")]}),
               ("tell me about the latest news development", {"entities": [(0, 41, "NEWS")]}),
+              #Chess
+              ("hey there, let's play a game of chess", {"entities": [(11, 37, "CHESS")]}),
+              ("i'm in the mood for some chess shall we play", {"entities": [(20, 44, "CHESS")]}),
+              ("jarvis, let's start a game of chess", {"entities": [(8, 35, "CHESS")]}),
+              ("i challenge you to a game of chess, jarvis are you ready", {"entities": [(0, 35, "CHESS")]}),
+              ("are you up for a game of chess, jarvis", {"entities": [(0, 30, "CHESS")]}),
+              ("i've been practicing my chess skills want to play a game with me, jarvis", {"entities": [(0, 64, "CHESS")]}),
+              # ("let's see who's better at chess, me or you, jarvis.", {"entities": [(25, 30, "CHESS")]}),
+              # ("i'm looking for a good opponent for a chess match. will you play with me, ai", {"entities": [(52, 57, "CHESS")]}),
+              # ("i'm excited to play a game of chess with you, jarvis.", {"entities": [(26, 31, "CHESS")]}),
+              # ("jarvis, i want to test my skills against you in a game of chess.", {"entities": [(49, 54, "CHESS")]}),
+              # ("shall we start a game of chess, ai. it's been a while since we last played.", {"entities": [(23, 28, "CHESS")]}),
+              # ("i'm up for a challenge. how about a game of chess, jarvis", {"entities": [(36, 41, "CHESS")]}),
+              # ("jarvis, i hope you're ready for a tough game of chess.", {"entities": [(42, 47, "CHESS")]}),
+              # ("i'm in the mood for a strategic game. let's play chess, ai.", {"entities": [(40, 45, "CHESS")]}),
+              # ("i think it's time for a friendly game of chess, jarvis. shall we begin", {"entities": [(43, 48, "CHESS")]}),
               ]
 
   for _, annotations in TRAIN_DATA:
@@ -135,10 +151,84 @@ def train():
   
   nlp.to_disk("models/nlp_en")
 
+def train_nlp_chess_en():
+  nlp=spacy.load('en_core_web_sm')
+  
+  # Getting the pipeline component
+  ner=nlp.get_pipe("ner")
+
+  # training data
+  TRAIN_DATA = [
+              ("pawn d4", {"entities": [(5, 7, "PAWN_MOVEMENT")]}),
+              ("pawn h5", {"entities": [(5, 7, "PAWN_MOVEMENT")]}),
+              ("pawn e4", {"entities": [(5, 7, "PAWN_MOVEMENT")]}),
+              ("pawn d5", {"entities": [(5, 7, "PAWN_MOVEMENT")]}),
+              ("pawn e5", {"entities": [(5, 7, "PAWN_MOVEMENT")]}),
+              ("pawn takes d4", {"entities": [(11, 13, "PAWN_CAPTURE")]}),
+              ("pawn takes h1", {"entities": [(11, 13, "PAWN_CAPTURE")]}),
+              ("pawn takes b6", {"entities": [(11, 13, "PAWN_CAPTURE")]}),
+              ("pawn takes f4", {"entities": [(11, 13, "PAWN_CAPTURE")]}),
+              ("pawn takes g2", {"entities": [(11, 13, "PAWN_CAPTURE")]}),
+              ("knight d4", {"entities": [(7, 9, "KNIGHT_MOVEMENT")]}),
+              ("knight to d4", {"entities": [(10, 12, "KNIGHT_MOVEMENT")]}),
+              ("knight to h2", {"entities": [(10, 12, "KNIGHT_MOVEMENT")]}),
+              ("knight a5", {"entities": [(7, 9, "KNIGHT_MOVEMENT")]}),
+              ("knight e3", {"entities": [(7, 9, "KNIGHT_MOVEMENT")]}),
+              ("bishop g8", {"entities": [(7, 9, "BISHOP_MOVEMENT")]}),
+              ("rook h8", {"entities": [(5, 7, "ROOK_MOVEMENT")]}),
+              ("rook h1", {"entities": [(5, 7, "ROOK_MOVEMENT")]}),
+              ("rook g1", {"entities": [(5, 7, "ROOK_MOVEMENT")]}),
+              ("rook a2", {"entities": [(5, 7, "ROOK_MOVEMENT")]}),
+              ("rook a8", {"entities": [(5, 7, "ROOK_MOVEMENT")]}),
+              ("queen d4", {"entities": [(6, 8, "QUEEN_MOVEMENT")]}),
+              ("queen e3", {"entities": [(6, 8, "QUEEN_MOVEMENT")]}),
+              ("queen a2", {"entities": [(6, 8, "QUEEN_MOVEMENT")]}),
+              ("queen f4", {"entities": [(6, 8, "QUEEN_MOVEMENT")]}),
+              ("queen h1", {"entities": [(6, 8, "QUEEN_MOVEMENT")]}),
+              ("king g8", {"entities": [(5, 7, "KING_MOVEMENT")]}),
+              ("king b1", {"entities": [(5, 7, "KING_MOVEMENT")]}),
+              ("king g1", {"entities": [(5, 7, "KING_MOVEMENT")]}),
+              ("king b8", {"entities": [(5, 7, "KING_MOVEMENT")]}),
+              ("king c3", {"entities": [(5, 7, "KING_MOVEMENT")]}),
+              ]
+
+  for _, annotations in TRAIN_DATA:
+    for ent in annotations.get("entities"):
+      ner.add_label(ent[2])
+
+  pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+  unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
+
+  with nlp.disable_pipes(*unaffected_pipes):
+    for _ in range(30):
+      random.shuffle(TRAIN_DATA)
+      batches = minibatch(TRAIN_DATA, size=compounding(4.0, 32.0, 1.001))
+      for batch in batches:
+          for text, annotations in batch:
+              doc = nlp.make_doc(text)
+              example = Example.from_dict(doc, annotations)
+              test = spacy.training.offsets_to_biluo_tags(doc, annotations.get("entities"))
+              if '-' in test:
+                print(text, ' | ', text[annotations.get("entities")[0][0]:annotations.get("entities")[0][1]], " | ", test)
+              texts, annotations = zip(*batch)
+              nlp.update(
+                          [example],
+                          losses={},
+                          drop=0.4,  # dropout - make it harder to memorise data
+                      )
+  
+  nlp.to_disk("models/nlp_chess_en")
+
 def getEntitiesFromSentence(sentence : str) :
   nlp_updated = spacy.load("models/nlp_en")
   doc = nlp_updated(sentence)
   return [(ent.text, ent.label_) for ent in doc.ents]
 
-print(getEntitiesFromSentence("hello jarvis what's the weather like"))
-print("--- %s seconds ---" % (time.time() - start_time))
+def getChessMove(sentence : str) :
+  nlp_updated = spacy.load("models/nlp_chess_en")
+  doc = nlp_updated(sentence)
+  return [(ent.text, ent.label_) for ent in doc.ents]
+
+# train_nlp_chess_en()
+# print(getEntitiesFromSentence("hello jarvis let's play chess"))
+# print("--- %s seconds ---" % (time.time() - start_time))
