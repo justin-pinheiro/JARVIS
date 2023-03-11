@@ -14,7 +14,7 @@ We are currently working on the project structure.
 
 ...
 
-## Features 
+## Features
 
 Here is a list of features JARVIS should be able to perform :
 
@@ -23,7 +23,7 @@ Here is a list of features JARVIS should be able to perform :
 - Switch between languages
 - Play music
 - Display recent news
-- Display current weather 
+- Display current weather
 - Search on Wikipedia
 - Send messages / emails
 - Provide random advice / jokes
