@@ -126,6 +126,7 @@
 
     ],
     "ner":[
+      "ACKNOWLEDGMENT",
       "CARDINAL",
       "CHESS",
       "DATE",
@@ -145,10 +146,12 @@
       "PERCENT",
       "PERSON",
       "PRODUCT",
+      "PURPOSE",
       "QUANTITY",
       "TIME",
-      "WEATHER",
-      "WORK_OF_ART"
+      "WELLBEING",
+      "WORK_OF_ART",
+      "wEATHER"
     ]
   },
   "pipeline":[
