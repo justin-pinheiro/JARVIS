@@ -126,7 +126,9 @@
 
     ],
     "ner":[
+      "ACKNOWLEDGMENT",
       "CARDINAL",
+      "CHESS",
       "DATE",
       "EVENT",
       "FAC",
@@ -137,15 +139,19 @@
       "LOC",
       "MONEY",
       "MUSIC_NAME",
+      "NEWS",
       "NORP",
       "ORDINAL",
       "ORG",
       "PERCENT",
       "PERSON",
       "PRODUCT",
+      "PURPOSE",
       "QUANTITY",
       "TIME",
-      "WORK_OF_ART"
+      "WELLBEING",
+      "WORK_OF_ART",
+      "wEATHER"
     ]
   },
   "pipeline":[
